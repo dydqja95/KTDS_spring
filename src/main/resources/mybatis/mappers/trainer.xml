@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+      PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mapper.trainer">
+	<resultMap id="trainResult" type="trainerVO">
+		<result property="id" column="id" />
+        <result property="exercise_count" column="exercise_count" />
+        <result property="nowdate" column="nowdate" />
+	</resultMap> 
+	
+	<select id="checkSquatTrainer" parameterType="trainerVO" resultType="int">
+		<![CDATA[
+			select count(*) from t_squat_count
+			where id = #{id} and nowdate = (select to_char(sysdate, 'YY/MM/DD') from dual)
+		]]>
+	</select>
+	
+	<insert id="insertSquatTrainer" parameterType="trainerVO"><!-- 찾아서 없으면 이거 실행 시킬 -->
+		<![CDATA[
+			insert into T_SQUAT_COUNT(id, exercise_count, nowdate)
+			values(#{id}, #{count}, (select to_char(sysdate,'YY/MM/DD') from dual))
+		]]>
+	</insert>
+	
+	<update id="plusSquatTrainer" parameterType="trainerVO"><!-- 찾아서 있으면 이거실 -->
+		<![CDATA[
+			update t_squat_count
+			set exercise_count = exercise_count + #{count}
+			where id = #{id} AND nowdate = (select to_char(sysdate, 'YY/MM/DD') from dual)
+		]]>
+	</update>
+</mapper>
